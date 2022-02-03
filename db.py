@@ -23,19 +23,23 @@ class apk_db():
 
     def create_db(self,cursor):
 
-        self.cursor.execute("""CREATE TABLE Application (sha256 TEXT, name TEXT, packageName TEXT, versionCode TEXT, 
+        self.cursor.execute("""CREATE TABLE Application(sha256 TEXT, name TEXT, packageName TEXT, versionCode TEXT, 
                         versionName TEXT, minSdkVersion TEXT, targetSdkVersion TEXT, maxSdkVersion TEXT,
                         permissions TEXT, libraries TEXT, debuggable TEXT, allowbackup TEXT)""")
-        self.cursor.execute("""CREATE TABLE Permissions (app_sha256 TEXT, permission TEXT, type TEXT, shortDescription TEXT, fullDescription TEXT)""")
+        self.cursor.execute("""CREATE TABLE Permissions(app_sha256 TEXT, permission TEXT, type TEXT, shortDescription TEXT, fullDescription TEXT)""")
 
-        self.cursor.execute("""CREATE TABLE Activities (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, autoRemoveFromRecents TEXT, 
+        self.cursor.execute("""CREATE TABLE Activities(app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, autoRemoveFromRecents TEXT, 
                         excludeFromRecents TRUE, noHistory TEXT, permission TEXT)""")
 
-        self.cursor.execute("""CREATE TABLE Services (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, foregroundServiceType TEXT, permission TEXT, process TEXT)""")
+        self.cursor.execute("""CREATE TABLE Services(app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, foregroundServiceType TEXT, permission TEXT, process TEXT)""")
 
-        self.cursor.execute("""CREATE TABLE Providers (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, grantUriPermissions TEXT, permission TEXT, process TEXT, readPermission TEXT, writePermission TEXT, authorities TEXT)""")
+        self.cursor.execute("""CREATE TABLE Providers(app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, grantUriPermissions TEXT, permission TEXT, process TEXT, readPermission TEXT, writePermission TEXT, authorities TEXT)""")
 
-        self.cursor.execute("""CREATE TABLE Receivers (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, permission TEXT, process TEXT)""")
+        self.cursor.execute("""CREATE TABLE Receivers(app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, permission TEXT, process TEXT)""")
+        
+        self.cursor.execute("""CREATE TABLE ActivityAlias(app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, permission TEXT, targetActivity TEXT)""")
+
+        self.cursor.execute("""CREATE TABLE IntentFilters(app_sha256 TEXT, componentName TEXT, actionList TEXT, categoryList TEXT, dataList TEXT)""")
 
 
 
@@ -45,6 +49,10 @@ class apk_db():
         #TODO
         return
 
+
+    def update_intent_filters(self,attribs):
+        sql = """INSERT INTO IntentFilters(app_sha256, componentName, actionList, categoryList, dataList) values(?,?,?,?,?)"""
+        self.execute_query(sql,attribs)
 
 
     def update_application(self,attribs):
@@ -74,6 +82,10 @@ class apk_db():
 
     def update_receivers(self,attribs):
         sql = """INSERT INTO Receivers(app_sha256, name, enabled, exported, permission, process) values(?,?,?,?,?,?)"""
+        self.execute_query(sql,attribs)
+    
+    def update_activity_alias(self,attribs):
+        sql = """INSERT INTO ActivityAlias(app_sha256, name, enabled, exported, permission, targetActivity) values(?,?,?,?,?,?)"""
         self.execute_query(sql,attribs)
 
 
