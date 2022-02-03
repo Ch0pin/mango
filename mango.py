@@ -159,6 +159,21 @@ def fill_intent_filters(sha256):
             app.update_intent_filters(filter_attribs)
 
 
+def fill_permissions(parsed_apk, sha256):
+
+  app_permissions = parsed_apk.get_details_permissions()
+  for permission in app_permissions:
+    entry = (app_sha256,permission,)+tuple(app_permissions[permission])
+    app.update_permissions(entry)
+
+
+def fill_application_attributes(parsed_apk,sha256,application):
+
+  app_attributes = (sha256,parsed_apk.get_app_name(),parsed_apk.get_package(),parsed_apk.get_androidversion_code(),parsed_apk.get_androidversion_name(),
+    parsed_apk.get_min_sdk_version(),parsed_apk.get_target_sdk_version(),parsed_apk.get_max_sdk_version(),'|'.join(apk_r.get_permissions()),
+    '|'.join(apk_r.get_libraries())) + (application.get(NS_ANDROID+"debuggable"), application.get(NS_ANDROID+"allowBackup"))
+
+  app.update_application(app_attributes)
 
         
     
@@ -178,29 +193,20 @@ if __name__ == "__main__":
 
         # apk_r, dex, analysis = AnalyzeAPK(sys.argv[1])
         apk_r = apk.APK(sys.argv[1])
-
         manifest = apk_r.get_android_manifest_axml().get_xml_obj()
         application = manifest.findall("application")[0]
+
 
         print("Finished Analyzing apk....")
 
 
-        app_attributes = (app_sha256,apk_r.get_app_name(),apk_r.get_package(),apk_r.get_androidversion_code(),apk_r.get_androidversion_name(),
-        apk_r.get_min_sdk_version(),apk_r.get_target_sdk_version(),apk_r.get_max_sdk_version(),
-        '|'.join(apk_r.get_permissions()),'|'.join(apk_r.get_libraries())) + (application.get(NS_ANDROID+"debuggable"), application.get(NS_ANDROID+"allowBackup"))
-
-        app_permissions = apk_r.get_details_permissions()
 
 
-        app.update_application(app_attributes)
+        
 
 
-        for permission in app_permissions:
-            entry = (app_sha256,permission,)+tuple(app_permissions[permission])
-            app.update_permissions(entry)
-
-
-
+        fill_application_attributes(apk_r,app_sha256,application)
+        fill_permissions(apk_r,app_sha256)
         fill_activities(application,app_sha256)
         fill_services(application,app_sha256)
         fill_providers(application, app_sha256)
