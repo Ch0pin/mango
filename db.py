@@ -32,6 +32,10 @@ class apk_db():
         self.cursor.execute("""CREATE TABLE Activities (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, autoRemoveFromRecents TEXT, 
                         excludeFromRecents TRUE, noHistory TEXT, permission TEXT)""")
 
+        self.cursor.execute("""CREATE TABLE Services (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, foregroundServiceType TEXT, permission TEXT, process TEXT)""")
+
+
+
 
 
     def query_db(self):
@@ -53,7 +57,11 @@ class apk_db():
         sql = """INSERT INTO Activities(app_sha256, name, enabled, exported, autoRemoveFromRecents, 
                         excludeFromRecents, noHistory, permission) values(?,?,?,?,?,?,?,?)"""
         self.execute_query(sql,attribs)
-
+    
+    def update_services(self,attribs):
+        sql = """INSERT INTO Services(app_sha256, name, enabled, exported, foregroundServiceType, 
+                        permission, process) values(?,?,?,?,?,?,?)"""
+        self.execute_query(sql,attribs)
 
     def execute_query(self,sql,attribs):
         self.cursor.execute(sql,attribs)
