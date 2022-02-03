@@ -149,15 +149,7 @@ def fill_activity_alias(application,sha256):
         activity_alias_attributes = (sha256, aliasname, enabled, exported,permission,targetActivity)
         app.update_activity_alias(activity_alias_attributes)  
       
-       
-
-
-
-
-
-
-
-       
+              
 def fill_intent_filters(sha256):
 
     for filter in filter_list:
@@ -173,59 +165,48 @@ def fill_intent_filters(sha256):
     
 
 
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("[+] usage: {} apkfile database.db".format(sys.argv[0]))
+    else:
+
+        app = apk_db(sys.argv[2])
+        app_sha256 = sha256sum(sys.argv[1])
+
+        print("Analyzing apk with SHA256:{}".format(app_sha256))
+
+
+        # apk_r, dex, analysis = AnalyzeAPK(sys.argv[1])
+        apk_r = apk.APK(sys.argv[1])
+
+        manifest = apk_r.get_android_manifest_axml().get_xml_obj()
+        application = manifest.findall("application")[0]
+
+        print("Finished Analyzing apk....")
+
+
+        app_attributes = (app_sha256,apk_r.get_app_name(),apk_r.get_package(),apk_r.get_androidversion_code(),apk_r.get_androidversion_name(),
+        apk_r.get_min_sdk_version(),apk_r.get_target_sdk_version(),apk_r.get_max_sdk_version(),
+        '|'.join(apk_r.get_permissions()),'|'.join(apk_r.get_libraries())) + (application.get(NS_ANDROID+"debuggable"), application.get(NS_ANDROID+"allowBackup"))
+
+        app_permissions = apk_r.get_details_permissions()
+
+
+        app.update_application(app_attributes)
+
+
+        for permission in app_permissions:
+            entry = (app_sha256,permission,)+tuple(app_permissions[permission])
+            app.update_permissions(entry)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-app = apk_db(sys.argv[2])
-app_sha256 = sha256sum(sys.argv[1])
-
-print("Analyzing apk with SHA256:{}".format(app_sha256))
-
-
-# apk_r, dex, analysis = AnalyzeAPK(sys.argv[1])
-apk_r = apk.APK(sys.argv[1])
-
-manifest = apk_r.get_android_manifest_axml().get_xml_obj()
-application = manifest.findall("application")[0]
-
-print("Finished Analyzing apk....")
-
-
-app_attributes = (app_sha256,apk_r.get_app_name(),apk_r.get_package(),apk_r.get_androidversion_code(),apk_r.get_androidversion_name(),
-apk_r.get_min_sdk_version(),apk_r.get_target_sdk_version(),apk_r.get_max_sdk_version(),
-'|'.join(apk_r.get_permissions()),'|'.join(apk_r.get_libraries())) + (application.get(NS_ANDROID+"debuggable"), application.get(NS_ANDROID+"allowBackup"))
-
-app_permissions = apk_r.get_details_permissions()
-
-
-app.update_application(app_attributes)
-
-
-for permission in app_permissions:
-    entry = (app_sha256,permission,)+tuple(app_permissions[permission])
-    app.update_permissions(entry)
-
-
-
-fill_activities(application,app_sha256)
-fill_services(application,app_sha256)
-fill_providers(application, app_sha256)
-fill_receivers(application, app_sha256)
-fill_activity_alias(application, app_sha256)
-fill_intent_filters(app_sha256)
+        fill_activities(application,app_sha256)
+        fill_services(application,app_sha256)
+        fill_providers(application, app_sha256)
+        fill_receivers(application, app_sha256)
+        fill_activity_alias(application, app_sha256)
+        fill_intent_filters(app_sha256)
 
 
    
