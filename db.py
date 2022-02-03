@@ -26,13 +26,18 @@ class apk_db():
         self.cursor.execute("""CREATE TABLE Application (sha256 TEXT, name TEXT, packageName TEXT, versionCode TEXT, 
                         versionName TEXT, minSdkVersion TEXT, targetSdkVersion TEXT, maxSdkVersion TEXT,
                         permissions TEXT, libraries TEXT, debuggable TEXT, allowbackup TEXT)""")
-
         self.cursor.execute("""CREATE TABLE Permissions (app_sha256 TEXT, permission TEXT, type TEXT, shortDescription TEXT, fullDescription TEXT)""")
 
         self.cursor.execute("""CREATE TABLE Activities (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, autoRemoveFromRecents TEXT, 
                         excludeFromRecents TRUE, noHistory TEXT, permission TEXT)""")
 
         self.cursor.execute("""CREATE TABLE Services (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, foregroundServiceType TEXT, permission TEXT, process TEXT)""")
+
+        self.cursor.execute("""CREATE TABLE Providers (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, grantUriPermissions TEXT, permission TEXT, process TEXT, readPermission TEXT, writePermission TEXT, authorities TEXT)""")
+
+
+
+
 
 
 
@@ -62,6 +67,16 @@ class apk_db():
         sql = """INSERT INTO Services(app_sha256, name, enabled, exported, foregroundServiceType, 
                         permission, process) values(?,?,?,?,?,?,?)"""
         self.execute_query(sql,attribs)
+
+
+    def update_providers(self,attribs):
+        sql = """INSERT INTO Providers(app_sha256, name, enabled, exported, grantUriPermissions, 
+                        permission, process,readPermission,writePermission,authorities) values(?,?,?,?,?,?,?,?,?,?)"""
+        self.execute_query(sql,attribs)
+
+
+
+
 
     def execute_query(self,sql,attribs):
         self.cursor.execute(sql,attribs)
