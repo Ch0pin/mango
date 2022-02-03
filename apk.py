@@ -60,9 +60,24 @@ def fill_providers(application,sha256):
         readPermission = provider.get(NS_ANDROID+"readPermission")
         writePermission = provider.get(NS_ANDROID+"writePermission")
         authorities = provider.get(NS_ANDROID+"authorities")
-        provider_attribs = (sha256, providername, enabled, exported,grantUriPermissions, permission,process,readPermission,writePermission,'|'.join(authorities))
+        provider_attribs = (sha256, providername, enabled, exported,grantUriPermissions, permission,process,readPermission,writePermission,authorities)
         app.update_providers(provider_attribs)  
 
+def fill_receivers(application,sha256):
+
+    for receiver in application.findall("receiver"):
+        receivername = receiver.get(NS_ANDROID+"name")
+        enabled = receiver.get(NS_ANDROID+"enabled")
+        exported = receiver.get(NS_ANDROID+"exported")
+        permission = receiver.get(NS_ANDROID+"permission")
+        process = receiver.get(NS_ANDROID+"process")
+
+        receiver_attribs = (sha256, receivername, enabled, exported,permission,process)
+        app.update_receivers(receiver_attribs)  
+      
+       
+       
+       
 
 
 
@@ -101,6 +116,7 @@ for permission in app_permissions:
 fill_activities(application,app_sha256)
 fill_services(application,app_sha256)
 fill_providers(application, app_sha256)
+fill_receivers(application, app_sha256)
 
 
 

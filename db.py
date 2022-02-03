@@ -35,9 +35,7 @@ class apk_db():
 
         self.cursor.execute("""CREATE TABLE Providers (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, grantUriPermissions TEXT, permission TEXT, process TEXT, readPermission TEXT, writePermission TEXT, authorities TEXT)""")
 
-
-
-
+        self.cursor.execute("""CREATE TABLE Receivers (app_sha256 TEXT, name TEXT, enabled TEXT, exported TEXT, permission TEXT, process TEXT)""")
 
 
 
@@ -73,6 +71,11 @@ class apk_db():
         sql = """INSERT INTO Providers(app_sha256, name, enabled, exported, grantUriPermissions, 
                         permission, process,readPermission,writePermission,authorities) values(?,?,?,?,?,?,?,?,?,?)"""
         self.execute_query(sql,attribs)
+
+    def update_receivers(self,attribs):
+        sql = """INSERT INTO Receivers(app_sha256, name, enabled, exported, permission, process) values(?,?,?,?,?,?)"""
+        self.execute_query(sql,attribs)
+
 
 
 
