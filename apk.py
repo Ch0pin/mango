@@ -31,18 +31,22 @@ print("Analyzing apk with SHA256:{}".format(app_sha256))
 
 # apk_r, dex, analysis = AnalyzeAPK(sys.argv[1])
 apk_r = apk.APK(sys.argv[1])
+
+manifest = apk_r.get_android_manifest_axml().get_xml_obj()
+application = manifest.findall("application")[0]
+
 print("Finished Analyzing apk....")
 
 
+
 app_attributes = (app_sha256,apk_r.get_app_name(),apk_r.get_package(),apk_r.get_androidversion_code(),apk_r.get_androidversion_name(),
-apk_r.get_min_sdk_version(),apk_r.get_target_sdk_version(),apk_r.get_max_sdk_version(),'|'.join(apk_r.get_permissions()),'|'.join(apk_r.get_libraries()))
+apk_r.get_min_sdk_version(),apk_r.get_target_sdk_version(),apk_r.get_max_sdk_version(),
+'|'.join(apk_r.get_permissions()),'|'.join(apk_r.get_libraries())) + (application.get(NS_ANDROID+"debuggable"), application.get(NS_ANDROID+"allowBackup"))
 
 app_permissions = apk_r.get_details_permissions()
 
 
-
 app.update_application(app_attributes)
-
 
 
 for permission in app_permissions:
@@ -50,18 +54,20 @@ for permission in app_permissions:
     app.update_permissions(entry)
 
 
-manifest = apk_r.get_android_manifest_axml().get_xml_obj()
-application = manifest.findall("application")[0]
-
-
-if application.get(NS_ANDROID+"debuggable") == 'true':
-    print("Debuggable...")
-
-if application.get(NS_ANDROID+"allowBackup") == 'true':
-    print("allowBackup...")
 
 for activity in application.findall("activity"):
     activityName = activity.get(NS_ANDROID+"name")
-    print(activityName)
-    if activity.get(NS_ANDROID+"exported") == 'true':
-        print( activityName+ ' ' +' is exported')
+    enabled = activity.get(NS_ANDROID+"enabled")
+    exported = activity.get(NS_ANDROID+"exported")
+    autoRemoveFromRecents = activity.get(NS_ANDROID+"autoRemoveFromRecents")
+    excludeFromRecents = activity.get(NS_ANDROID+"excludeFromRecents")
+    noHistory = activity.get(NS_ANDROID+"noHistory")
+    permission = activity.get(NS_ANDROID+"permission")
+    activity_attribs = (app_sha256, activityName, enabled, exported,autoRemoveFromRecents, excludeFromRecents,noHistory,permission)
+    app.update_activities(activity_attribs)
+
+   
+
+
+
+  
